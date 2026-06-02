@@ -198,7 +198,7 @@ export default function Footer() {
         {/* Copyright */}
         <div className="mt-8 pt-8 border-t border-border text-center md:text-left">
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Harar Mart. All rights reserved. Built with ❤️ for global trade.
+          © 2026Harar Mart. All rights reserved. Built with ❤️ for global trade. | Developed by <a href="https://obsan2021.github.io/clover-digital/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Clover Digital</a>
           </p>
         </div>
       </div>
