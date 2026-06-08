@@ -20,7 +20,6 @@ import Careers from './pages/app/Careers'
 import Press from './pages/app/Press'
 import Partners from './pages/app/Partners'
 import Contact from './pages/app/Contact'
-import Marketplace from './pages/app/Marketplace'
 import NotFound from './pages/app/NotFound'
 import Dashboard from './pages/admin/Dashboard'
 import Products from './pages/admin/Products'
@@ -52,7 +51,6 @@ function App() {
               <Route path="press" element={<Press />} />
               <Route path="partners" element={<Partners />} />
               <Route path="contact" element={<Contact />} />
-              <Route path="marketplace" element={<Marketplace />} />
 
               {/* Protected Routes */}
               <Route element={<ProtectedRoute />}>

@@ -24,7 +24,6 @@ export default function AppLayout() {
             <nav className="hidden md:flex items-center gap-6">
               <NavLink to="/">Home</NavLink>
               <NavLink to="/shop">Shop</NavLink>
-              <NavLink to="/marketplace">Marketplace</NavLink>
               <NavLink to="/support">Support</NavLink>
             </nav>
 
@@ -72,7 +71,6 @@ export default function AppLayout() {
             <nav className="md:hidden mt-4 flex flex-col gap-4">
               <NavLink to="/">Home</NavLink>
               <NavLink to="/shop">Shop</NavLink>
-              <NavLink to="/marketplace">Marketplace</NavLink>
               <NavLink to="/support">Support</NavLink>
               <Link to="/cart" className="flex items-center gap-2">
                 <ShoppingCart className="h-5 w-5" />
