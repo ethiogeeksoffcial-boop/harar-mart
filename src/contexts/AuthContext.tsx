@@ -9,6 +9,7 @@ interface AuthContextType {
   profileFetchError: string | null
   signIn: (email: string, password: string) => Promise<void>
   signUp: (email: string, password: string, fullName: string) => Promise<void>
+  signInWithGoogle: () => Promise<void>
   signOut: () => Promise<void>
   isAdmin: boolean
   isSeller: boolean
@@ -186,6 +187,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  async function signInWithGoogle() {
+    setProfileFetchError(null)
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin + '/auth',
+      },
+    })
+    if (error) throw error
+  }
+
   async function signOut() {
     await supabase.auth.signOut()
     setUser(null)
@@ -199,6 +211,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     profileFetchError,
     signIn,
     signUp,
+    signInWithGoogle,
     signOut,
     isAdmin: user?.role === 'admin',
     isSeller: user?.role === 'seller',
