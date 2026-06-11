@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Harar Mart</title>
+  <script>
+    // GitHub Pages SPA redirect — preserve the path after /harar-mart/
+    const segment = '/harar-mart/'
+    const path = location.pathname.replace(new RegExp('^' + segment), '')
+    if (path && path !== '404.html') {
+      sessionStorage.redirect = path
+    }
+  </script>
+</head>
+<body>
+  <script>
+    // Redirect to index.html — the app will read sessionStorage.redirect and navigate
+    location.replace('/harar-mart/')
+  </script>
+</body>
+</html>

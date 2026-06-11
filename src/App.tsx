@@ -1,5 +1,5 @@
-import { lazy, Suspense } from 'react'
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { lazy, Suspense, useEffect } from 'react'
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import { CartProvider } from './contexts/CartContext'
 
@@ -40,9 +40,24 @@ const SellerProfile = lazy(() => import('./pages/seller/Profile'))
 // Auth pages — keep these eager (tiny + needed immediately)
 import Auth from './pages/app/Auth'
 
+function RedirectHandler() {
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const redirect = sessionStorage.getItem('redirect')
+    if (redirect) {
+      sessionStorage.removeItem('redirect')
+      navigate(redirect, { replace: true })
+    }
+  }, [navigate])
+
+  return null
+}
+
 function App() {
   return (
-    <Router>
+    <Router basename="/harar-mart">
+      <RedirectHandler />
       <AuthProvider>
         <CartProvider>
           <Suspense fallback={
