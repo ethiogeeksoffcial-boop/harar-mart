@@ -4,18 +4,25 @@
   <meta charset="utf-8">
   <title>Harar Mart</title>
   <script>
+    // Detect if we're on GitHub Pages (subpath) or Vercel (root)
+    var isGitHubPages = location.hostname.includes('github.io')
+    var basePath = isGitHubPages ? '/harar-mart/' : '/'
+    
     // GitHub Pages SPA redirect — preserve the path after /harar-mart/
-    const segment = '/harar-mart/'
-    const path = location.pathname.replace(new RegExp('^' + segment), '')
-    if (path && path !== '404.html') {
-      sessionStorage.redirect = path
+    if (isGitHubPages) {
+      var segment = '/harar-mart/'
+      var path = location.pathname.replace(new RegExp('^' + segment), '')
+      if (path && path !== '404.html') {
+        sessionStorage.redirect = path
+      }
     }
   </script>
 </head>
 <body>
   <script>
     // Redirect to index.html — the app will read sessionStorage.redirect and navigate
-    location.replace('/harar-mart/')
+    var isGitHubPages = location.hostname.includes('github.io')
+    location.replace(isGitHubPages ? '/harar-mart/' : '/')
   </script>
 </body>
 </html>

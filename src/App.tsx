@@ -54,9 +54,13 @@ function RedirectHandler() {
   return null
 }
 
+// Detect if we're on GitHub Pages (served from subpath) vs Vercel (root)
+const isGitHubPages = window.location.hostname.includes('github.io')
+const basename = isGitHubPages ? '/harar-mart' : ''
+
 function App() {
   return (
-    <Router basename="/harar-mart">
+    <Router basename={basename}>
       <RedirectHandler />
       <AuthProvider>
         <CartProvider>
