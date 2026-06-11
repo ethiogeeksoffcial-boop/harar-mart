@@ -1,5 +1,36 @@
 import { Link } from 'react-router-dom'
-import { Building2, Mail, Phone, MapPin, Facebook, Twitter, Linkedin, Instagram } from 'lucide-react'
+import { Building2, Mail, Phone, MapPin } from 'lucide-react'
+
+const footerLinks = {
+  product: [
+    { label: 'Browse Products', to: '/shop' },
+    { label: 'Categories', to: '/categories' },
+    { label: 'Verified Suppliers', to: '/suppliers' },
+    { label: 'Request Quotes', to: '/quotes' },
+    { label: 'Order Samples', to: '/samples' },
+  ],
+  company: [
+    { label: 'About Us', to: '/about' },
+    { label: 'Careers', to: '/careers' },
+    { label: 'Press', to: '/press' },
+    { label: 'Partners', to: '/partners' },
+    { label: 'Contact Us', to: '/contact' },
+  ],
+  resources: [
+    { label: 'Blog', to: '/blog' },
+    { label: 'Buying Guides', to: '/guides' },
+    { label: 'Help Center', to: '/help' },
+    { label: 'API Documentation', to: '/api' },
+    { label: 'Community', to: '/community' },
+  ],
+  legal: [
+    { label: 'Privacy Policy', to: '/privacy' },
+    { label: 'Terms of Service', to: '/terms' },
+    { label: 'Cookie Policy', to: '/cookies' },
+    { label: 'Disclaimer', to: '/disclaimer' },
+    { label: 'Compliance', to: '/compliance' },
+  ],
+}
 
 export default function Footer() {
   return (
@@ -17,51 +48,19 @@ export default function Footer() {
             <p className="text-sm text-muted-foreground">
               Your trusted global B2B marketplace connecting buyers with verified suppliers worldwide.
             </p>
-            <div className="flex gap-3">
-              <a href="#" className="w-9 h-9 bg-background rounded-full flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors">
-                <Facebook className="h-4 w-4" />
-              </a>
-              <a href="#" className="w-9 h-9 bg-background rounded-full flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors">
-                <Twitter className="h-4 w-4" />
-              </a>
-              <a href="#" className="w-9 h-9 bg-background rounded-full flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors">
-                <Linkedin className="h-4 w-4" />
-              </a>
-              <a href="#" className="w-9 h-9 bg-background rounded-full flex items-center justify-center hover:bg-primary hover:text-primary-foreground transition-colors">
-                <Instagram className="h-4 w-4" />
-              </a>
-            </div>
           </div>
 
           {/* Product Links */}
           <div className="space-y-4">
             <h3 className="font-semibold text-lg">Product</h3>
             <ul className="space-y-2">
-              <li>
-                <Link to="/shop" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Browse Products
-                </Link>
-              </li>
-              <li>
-                <Link to="/categories" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Categories
-                </Link>
-              </li>
-              <li>
-                <Link to="/suppliers" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Verified Suppliers
-                </Link>
-              </li>
-              <li>
-                <Link to="/quotes" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Request Quotes
-                </Link>
-              </li>
-              <li>
-                <Link to="/samples" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Order Samples
-                </Link>
-              </li>
+              {footerLinks.product.map((link) => (
+                <li key={link.to}>
+                  <Link to={link.to} className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -69,31 +68,13 @@ export default function Footer() {
           <div className="space-y-4">
             <h3 className="font-semibold text-lg">Company</h3>
             <ul className="space-y-2">
-              <li>
-                <Link to="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link to="/careers" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Careers
-                </Link>
-              </li>
-              <li>
-                <Link to="/press" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Press
-                </Link>
-              </li>
-              <li>
-                <Link to="/partners" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Partners
-                </Link>
-              </li>
-              <li>
-                <Link to="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Contact Us
-                </Link>
-              </li>
+              {footerLinks.company.map((link) => (
+                <li key={link.to}>
+                  <Link to={link.to} className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -101,31 +82,13 @@ export default function Footer() {
           <div className="space-y-4">
             <h3 className="font-semibold text-lg">Resources</h3>
             <ul className="space-y-2">
-              <li>
-                <Link to="/blog" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Blog
-                </Link>
-              </li>
-              <li>
-                <Link to="/guides" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Buying Guides
-                </Link>
-              </li>
-              <li>
-                <Link to="/help" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Help Center
-                </Link>
-              </li>
-              <li>
-                <Link to="/api" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  API Documentation
-                </Link>
-              </li>
-              <li>
-                <Link to="/community" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Community
-                </Link>
-              </li>
+              {footerLinks.resources.map((link) => (
+                <li key={link.to}>
+                  <Link to={link.to} className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -133,31 +96,13 @@ export default function Footer() {
           <div className="space-y-4">
             <h3 className="font-semibold text-lg">Legal</h3>
             <ul className="space-y-2">
-              <li>
-                <Link to="/privacy" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link to="/terms" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Terms of Service
-                </Link>
-              </li>
-              <li>
-                <Link to="/cookies" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Cookie Policy
-                </Link>
-              </li>
-              <li>
-                <Link to="/disclaimer" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Disclaimer
-                </Link>
-              </li>
-              <li>
-                <Link to="/compliance" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Compliance
-                </Link>
-              </li>
+              {footerLinks.legal.map((link) => (
+                <li key={link.to}>
+                  <Link to={link.to} className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
@@ -198,7 +143,8 @@ export default function Footer() {
         {/* Copyright */}
         <div className="mt-8 pt-8 border-t border-border text-center md:text-left">
           <p className="text-sm text-muted-foreground">
-          © 2026Harar Mart. All rights reserved. Built with ❤️ for global trade. | Developed by <a href="https://officialcloverdigital.com/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Clover Digital</a>
+          © 2026 Harar Mart. All rights reserved. Built with ❤️ for global trade. | Developed by <a href="https://officialcloverdigital.com/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Clover Digital</a>
+
           </p>
         </div>
       </div>

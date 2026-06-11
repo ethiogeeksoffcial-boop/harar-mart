@@ -7,10 +7,10 @@ import { useCart } from '@/contexts/CartContext'
 
 export default function Header() {
   const { user, signOut } = useAuth()
-  const { cart } = useCart()
+  const { cartItems } = useCart()
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
 
-  const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0)
+  const cartItemCount = cartItems.reduce((sum: number, item: { quantity: number }) => sum + item.quantity, 0)
 
   return (
     <header className="border-b bg-background sticky top-0 z-50">

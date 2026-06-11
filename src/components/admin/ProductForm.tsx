@@ -16,18 +16,19 @@ export default function ProductForm({ product, onSubmit, onCancel }: ProductForm
   const [formData, setFormData] = React.useState({
     name: product?.name || '',
     description: product?.description || '',
-    price: product?.price || '',
-    stock: product?.stock || '',
+    min_price: product?.min_price?.toString() || '',
+    max_price: product?.max_price?.toString() || '',
     category_id: product?.category_id || '',
-    image_url: product?.image_url || '',
+    moq: product?.moq?.toString() || '1',
   })
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     onSubmit({
       ...formData,
-      price: parseFloat(formData.price),
-      stock: parseInt(formData.stock),
+      min_price: parseFloat(formData.min_price),
+      max_price: parseFloat(formData.max_price),
+      moq: parseInt(formData.moq),
     })
   }
 
@@ -58,42 +59,47 @@ export default function ProductForm({ product, onSubmit, onCancel }: ProductForm
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="price">Price</Label>
+              <Label htmlFor="min_price">Min Price</Label>
               <Input
-                id="price"
+                id="min_price"
                 type="number"
                 step="0.01"
-                value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                value={formData.min_price}
+                onChange={(e) => setFormData({ ...formData, min_price: e.target.value })}
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="stock">Stock</Label>
+              <Label htmlFor="max_price">Max Price</Label>
               <Input
-                id="stock"
+                id="max_price"
                 type="number"
-                value={formData.stock}
-                onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
+                step="0.01"
+                value={formData.max_price}
+                onChange={(e) => setFormData({ ...formData, max_price: e.target.value })}
                 required
               />
             </div>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="category">Category</Label>
-            <Input
-              id="category"
-              value={formData.category_id}
-              onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="image">Image URL</Label>
-            <Input
-              id="image"
-              value={formData.image_url}
-              onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="moq">MOQ (Min Order Qty)</Label>
+              <Input
+                id="moq"
+                type="number"
+                value={formData.moq}
+                onChange={(e) => setFormData({ ...formData, moq: e.target.value })}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="category">Category</Label>
+              <Input
+                id="category"
+                value={formData.category_id}
+                onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
+              />
+            </div>
           </div>
           <div className="flex gap-2 justify-end">
             <Button type="button" variant="outline" onClick={onCancel}>

@@ -6,6 +6,7 @@ import { ShoppingCart, User, LogOut, Menu } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import NavLink from '@/components/ui/NavLink'
 import Footer from '@/components/layout/Footer'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 
 export default function AppLayout() {
   const { user, signOut } = useAuth()
@@ -92,10 +93,14 @@ export default function AppLayout() {
       </header>
 
       <main className="flex-1">
-        <Outlet />
+        <ErrorBoundary>
+          <Outlet />
+        </ErrorBoundary>
       </main>
 
       <Footer />
     </div>
   )
 }
+
+

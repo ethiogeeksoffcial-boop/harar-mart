@@ -51,7 +51,7 @@ export default function OrderDetailPanel({ order, onClose }: OrderDetailPanelPro
           <div>
             <h4 className="font-semibold mb-2">Customer Notes</h4>
             <p className="text-sm text-muted-foreground">
-              {order.notes || 'No notes provided'}
+              {(order as any).notes || 'No notes provided'}
             </p>
           </div>
 

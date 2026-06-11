@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Search, Building2, CheckCircle, ArrowRight, Package, Globe, Shield, Star, DollarSign, Users } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -8,11 +8,13 @@ import { supabase } from '@/integrations/supabase/client'
 import type { Category, SellerProfile } from '@/integrations/supabase/types'
 
 export default function Home() {
+  const navigate = useNavigate()
   const [categories, setCategories] = useState<Category[]>([])
   const [verifiedSellers, setVerifiedSellers] = useState<SellerProfile[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
 
   useEffect(() => {
     Promise.all([fetchCategories(), fetchVerifiedSellers()])
@@ -55,9 +57,10 @@ export default function Home() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     if (searchQuery) {
-      window.location.href = `/shop?q=${encodeURIComponent(searchQuery)}`
+      navigate(`/shop?q=${encodeURIComponent(searchQuery)}`)
     }
   }
+
 
   if (loading) {
     return (

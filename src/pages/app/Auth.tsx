@@ -27,7 +27,7 @@ export default function Auth() {
   const [certifications, setCertifications] = useState<string[]>([])
   const [businessLicense, setBusinessLicense] = useState('')
   
-  const { signIn, signUp } = useAuth()
+  const { signIn, signUp, user, loading: authLoading } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
   const [searchParams] = useSearchParams()
@@ -40,6 +40,19 @@ export default function Auth() {
       setIsLogin(false)
     }
   }, [searchParams])
+
+  // Handle redirect after sign-in/sign-up based on user role
+  useEffect(() => {
+    if (user && !authLoading && !loading) {
+      if (user.role === 'admin') {
+        navigate('/admin/dashboard', { replace: true })
+      } else if (user.role === 'seller') {
+        navigate('/seller/products', { replace: true })
+      } else {
+        navigate(from, { replace: true })
+      }
+    }
+  }, [user, authLoading, loading, navigate, from])
 
   const availableCertifications = ['ISO9001', 'ISO14001', 'CE', 'FCC', 'RoHS', 'GMP', 'HACCP', 'FDA']
 
@@ -57,7 +70,7 @@ export default function Auth() {
     try {
       if (isLogin) {
         await signIn(email, password)
-        navigate(from, { replace: true })
+        // Redirect is handled by useEffect based on user role
       } else {
         await signUp(email, password, fullName, role)
         
@@ -75,8 +88,7 @@ export default function Auth() {
             })
           }
         }
-        
-        navigate(from, { replace: true })
+        // Redirect is handled by useEffect based on user role after sign up
       }
     } catch (err: any) {
       setError(err.message || 'An error occurred')

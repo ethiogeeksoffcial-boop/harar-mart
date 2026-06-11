@@ -54,9 +54,9 @@ export default function Products() {
               <div key={product.id} className="flex items-center justify-between p-4 border rounded-lg">
                 <div className="flex items-center gap-4">
                   <div className="w-16 h-16 bg-muted rounded-md flex items-center justify-center">
-                    {product.image_url ? (
+                    {product.images?.[0] ? (
                       <img
-                        src={product.image_url}
+                        src={product.images[0]}
                         alt={product.name}
                         className="w-full h-full object-cover rounded-md"
                       />
@@ -66,8 +66,8 @@ export default function Products() {
                   </div>
                   <div>
                     <h3 className="font-semibold">{product.name}</h3>
-                    <p className="text-sm text-muted-foreground">{formatPrice(product.price)}</p>
-                    <p className="text-xs text-muted-foreground">Stock: {product.stock}</p>
+                    <p className="text-sm text-muted-foreground">{formatPrice(product.min_price)}</p>
+                    <p className="text-xs text-muted-foreground">MOQ: {product.moq}</p>
                   </div>
                 </div>
                 <div className="flex gap-2">
