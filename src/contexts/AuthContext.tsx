@@ -6,6 +6,7 @@ interface AuthContextType {
   user: User | null
   sellerProfile: SellerProfile | null
   loading: boolean
+  profileFetchError: string | null
   signIn: (email: string, password: string) => Promise<void>
   signUp: (email: string, password: string, fullName: string) => Promise<void>
   signOut: () => Promise<void>
@@ -21,31 +22,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [sellerProfile, setSellerProfile] = useState<SellerProfile | null>(null)
   const [loading, setLoading] = useState(true)
+  const [profileFetchError, setProfileFetchError] = useState<string | null>(null)
 
   useEffect(() => {
+    // Check for existing session on mount
     checkUser()
+
+    // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session?.user) {
         await fetchUserProfile(session.user.id)
       } else {
         setUser(null)
         setSellerProfile(null)
-      }
-      setLoading(false)
-    })
-    return () => subscription.unsubscribe()
-  }, [])
-
-  // Fallback: if loading takes too long, set it to false
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (loading) {
-        console.warn('Auth loading timeout - setting loading to false')
+        setProfileFetchError(null)
         setLoading(false)
       }
-    }, 3000)
-    return () => clearTimeout(timeout)
-  }, [loading])
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
 
   async function checkUser() {
     const { data: { session } } = await supabase.auth.getSession()
@@ -57,6 +53,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   async function fetchUserProfile(userId: string) {
     try {
+      setProfileFetchError(null)
       const { data, error } = await supabase
         .from('users')
         .select('*')
@@ -64,7 +61,50 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .single()
 
       if (error) {
-        console.error('Error fetching user profile:', error)
+        // If the row doesn't exist yet (e.g. trigger hasn't fired, or user
+        // was created before the handle_new_user trigger existed), create it.
+        if (error.code === 'PGRST116') {
+          // Row not found — fetch user metadata from auth and create the row
+          const { data: { user: authUser } } = await supabase.auth.getUser()
+          if (authUser) {
+            const fullName = authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || ''
+            const { error: insertError } = await supabase.from('users').insert({
+              id: userId,
+              email: authUser.email!,
+              full_name: fullName,
+              role: 'buyer',
+              is_verified: false,
+            })
+            if (insertError) {
+              console.error('Failed to create user profile row:', insertError)
+              setProfileFetchError('Unable to create user profile. Please contact support.')
+              // Set a minimal user object so the app doesn't break
+              setUser({
+                id: userId,
+                email: authUser.email!,
+                full_name: fullName,
+                phone: null,
+                address: null,
+                role: 'buyer',
+                is_verified: false,
+                country: null,
+                created_at: new Date().toISOString(),
+              })
+            } else {
+              // Fetch the newly created row
+              const { data: newUser } = await supabase
+                .from('users')
+                .select('*')
+                .eq('id', userId)
+                .single()
+              if (newUser) setUser(newUser)
+            }
+          }
+        } else {
+          console.error('Error fetching user profile:', error)
+          setProfileFetchError('Unable to load user profile. Please try again.')
+        }
+        setLoading(false)
         return
       }
 
@@ -79,25 +119,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             .single()
           if (sellerError) {
             console.error('Error fetching seller profile:', sellerError)
+            // Don't block sign-in if seller profile fetch fails
+            setSellerProfile(null)
           } else if (sellerData) {
             setSellerProfile(sellerData)
           }
         }
       }
+      setLoading(false)
     } catch (e) {
       console.error('Error in fetchUserProfile:', e)
+      setProfileFetchError('An unexpected error occurred. Please try again.')
+      setLoading(false)
     }
   }
 
   async function signIn(email: string, password: string) {
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) throw error
+    // Clear any previous profile fetch errors
+    setProfileFetchError(null)
+    
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+    if (error) {
+      // Provide more specific error messages
+      if (error.message === 'Invalid login credentials') {
+        throw new Error('Invalid email or password')
+      } else if (error.message.includes('Email not confirmed')) {
+        throw new Error('Please confirm your email address before signing in')
+      } else {
+        throw error
+      }
+    }
+    // After successful sign-in, onAuthStateChange will fire and fetchUserProfile
+    // will be called. The Auth page's useEffect will detect the user and redirect.
   }
 
   async function signUp(email: string, password: string, fullName: string) {
-    // Everyone signs up as a buyer — the handle_new_user DB trigger
-    // will create the public.users row with role='buyer'.
-    // We pass full_name in user_metadata so the trigger can use it.
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -112,7 +168,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // If the DB trigger doesn't fire (e.g. on an existing project where
     // it hasn't been applied yet), fall back to inserting manually.
     if (data.user) {
-      // Check if the trigger already created the row
       const { data: existing } = await supabase
         .from('users')
         .select('id')
@@ -141,6 +196,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     user,
     sellerProfile,
     loading,
+    profileFetchError,
     signIn,
     signUp,
     signOut,

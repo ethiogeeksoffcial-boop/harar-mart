@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Globe, ArrowRight, Shield, TrendingUp } from 'lucide-react'
+import { Globe, ArrowRight, Shield, TrendingUp, ArrowLeft } from 'lucide-react'
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true)
@@ -14,7 +14,7 @@ export default function Auth() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  const { signIn, signUp, user, loading: authLoading } = useAuth()
+  const { signIn, signUp, user, loading: authLoading, profileFetchError } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
   const from = location.state?.from?.pathname || '/'
@@ -32,6 +32,13 @@ export default function Auth() {
     }
   }, [user, authLoading, navigate, from])
 
+  // Display profile fetch error if present
+  useEffect(() => {
+    if (profileFetchError) {
+      setError(profileFetchError)
+    }
+  }, [profileFetchError])
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
@@ -40,11 +47,14 @@ export default function Auth() {
     try {
       if (isLogin) {
         await signIn(email, password)
-        // Redirect is handled by useEffect based on user role
       } else {
         await signUp(email, password, fullName)
-        // Redirect is handled by useEffect based on user role after sign up
       }
+      // Navigate immediately after successful auth.
+      // The useEffect above also handles role-based redirects when the
+      // user profile finishes loading, but this ensures the user isn't
+      // left stuck on the auth page if onAuthStateChange is delayed.
+      navigate(from, { replace: true })
     } catch (err: any) {
       setError(err.message || 'An error occurred')
     } finally {
@@ -105,6 +115,15 @@ export default function Auth() {
       {/* Form Panel - Right Side */}
       <div className="flex-1 flex items-center justify-center p-8 bg-background">
         <div className="w-full max-w-md">
+          {/* Back to Home button */}
+          <button
+            onClick={() => navigate('/')}
+            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-6 transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Home
+          </button>
+
           <div className="mb-8">
             <h2 className="text-3xl font-bold mb-2">{isLogin ? 'Welcome Back' : 'Create Account'}</h2>
             <p className="text-muted-foreground">
