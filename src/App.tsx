@@ -27,6 +27,7 @@ const Partners = lazy(() => import('./pages/app/Partners'))
 const Contact = lazy(() => import('./pages/app/Contact'))
 const NotFound = lazy(() => import('./pages/app/NotFound'))
 const ComingSoon = lazy(() => import('./pages/ComingSoon'))
+const HouseRentals = lazy(() => import('./pages/app/HouseRentals'))
 const SellerApplication = lazy(() => import('./pages/app/SellerApplication'))
 const Dashboard = lazy(() => import('./pages/admin/Dashboard'))
 const Products = lazy(() => import('./pages/admin/Products'))
@@ -84,6 +85,7 @@ function App() {
                 <Route path="press" element={<Press />} />
                 <Route path="partners" element={<Partners />} />
                 <Route path="contact" element={<Contact />} />
+                <Route path="rentals" element={<HouseRentals />} />
 
                 {/* Stub routes for footer links */}
                 <Route path="categories" element={<ComingSoon />} />

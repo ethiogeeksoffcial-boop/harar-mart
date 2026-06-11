@@ -123,3 +123,22 @@ export interface DeliveryAgent {
   created_at: string
   user?: User
 }
+
+export interface HouseRental {
+  id: string
+  user_id: string
+  title: string
+  description: string
+  price: number
+  bedrooms: number
+  bathrooms: number
+  square_feet: number | null
+  location: string
+  address: string | null
+  images: string[]
+  amenities: string[]
+  status: 'available' | 'rented'
+  created_at: string
+  updated_at: string
+  user?: User
+}

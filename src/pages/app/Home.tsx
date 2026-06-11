@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Search, Building2, CheckCircle, ArrowRight, Package, Globe, Shield, Star, DollarSign, Users } from 'lucide-react'
+import { Search, Building2, CheckCircle, ArrowRight, Package, Globe, Shield, Star, DollarSign, Users, Home as HomeIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
@@ -154,6 +154,12 @@ export default function Home() {
                   <Button size="lg" variant="secondary" className="h-12 px-8">
                     <Package className="mr-2 h-5 w-5" />
                     Admin Dashboard
+                  </Button>
+                </Link>
+                <Link to="/rentals">
+                  <Button size="lg" variant="secondary" className="h-12 px-8">
+                    <HomeIcon className="mr-2 h-5 w-5" />
+                    House Rentals
                   </Button>
                 </Link>
               </div>
