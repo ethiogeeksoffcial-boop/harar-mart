@@ -18,7 +18,7 @@ export default function Header() {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center gap-2">
-            <img src={logoSrc} alt="Harar Mart" className="h-8 w-8 rounded-lg object-cover" />
+            <img src={logoSrc} alt="Harar Mart" className="h-9 w-9" />
             <span className="text-2xl font-bold text-primary">Harar Mart</span>
           </Link>
 

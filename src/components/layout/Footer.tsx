@@ -82,7 +82,7 @@ export default function Footer() {
           {/* Logo and Tagline */}
           <div className="lg:col-span-2 space-y-4">
             <div className="flex items-center gap-2">
-              <img src={logoSrc} alt="Harar Mart" className="h-10 w-10 rounded-lg object-cover" />
+              <img src={logoSrc} alt="Harar Mart" className="h-12 w-12" />
               <span className="text-xl font-bold">Harar Mart</span>
             </div>
             <p className="text-sm text-muted-foreground max-w-xs">

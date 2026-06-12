@@ -65,7 +65,7 @@ export default function AppLayout() {
             <div className="flex items-center justify-between h-16 gap-4">
               {/* Logo */}
               <Link to="/" className="flex items-center gap-2 shrink-0">
-                <img src={logoSrc} alt="Harar Mart" className="h-9 w-9 rounded-lg object-cover" />
+                <img src={logoSrc} alt="Harar Mart" className="h-10 w-10" />
                 <span className="text-xl font-bold text-foreground hidden sm:block">
                   Harar Mart
                 </span>
