@@ -123,3 +123,116 @@
   );
   background-size: 1000px 100%;
 }
+
+/* ===== Alibaba-style utility classes ===== */
+
+/* Line clamp utilities */
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Custom scrollbar for horizontal scrollers */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Sticky header shadow transition */
+.sticky-header {
+  transition: box-shadow 0.3s ease;
+}
+.sticky-header.scrolled {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Mega-menu animation */
+@keyframes mega-menu-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-mega-menu {
+  animation: mega-menu-enter 0.2s ease-out;
+}
+
+/* Skeleton pulse for product cards */
+@keyframes skeleton-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-skeleton-pulse {
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+/* Image aspect ratio container */
+.aspect-square {
+  aspect-ratio: 1 / 1;
+}
+
+/* Hover overlay for product cards */
+.product-card-overlay {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.product-card:hover .product-card-overlay {
+  opacity: 1;
+}
+
+/* Price styling */
+.price-amount {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Container max-width for Alibaba-style layout */
+.container-alibaba {
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 768px) {
+  .container-alibaba {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  .container-alibaba {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
