@@ -100,8 +100,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (BYPASS_AUTH) return
 
+    // Safety timeout: ensure loading resolves within 8 seconds no matter what
+    const safetyTimer = setTimeout(() => {
+      setLoading(false)
+    }, 8000)
+
     // Normal auth flow below
-    checkUser()
+    checkUser().finally(() => {
+      clearTimeout(safetyTimer)
+    })
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session?.user) {
@@ -118,19 +125,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     })
 
-    return () => subscription.unsubscribe()
+    return () => {
+      subscription.unsubscribe()
+      clearTimeout(safetyTimer)
+    }
   }, [])
 
   async function checkUser() {
     try {
       const { data: { session } } = await supabase.auth.getSession()
       if (session?.user) {
-        await fetchUserProfile(session.user.id)
-      } else {
-        setLoading(false)
+        // Try to fetch profile, but don't block loading forever
+        await Promise.race([
+          fetchUserProfile(session.user.id),
+          new Promise<void>((resolve) => setTimeout(resolve, 5000))
+        ])
       }
     } catch (e) {
       console.error('Error checking user session:', e)
+    } finally {
       setLoading(false)
     }
   }
