@@ -1,6 +1,6 @@
 -- House Rentals table
 CREATE TABLE IF NOT EXISTS house_rentals (
-  id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id     UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   title       TEXT NOT NULL,
   description TEXT NOT NULL,
@@ -46,6 +46,15 @@ CREATE POLICY "Owners can update their own listings"
 CREATE POLICY "Owners can delete their own listings"
   ON house_rentals FOR DELETE
   USING (auth.uid() = user_id);
+
+-- Create the updated_at trigger function if it doesn't exist
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
 -- Updated_at trigger
 CREATE TRIGGER update_house_rentals_updated_at

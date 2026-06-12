@@ -20,9 +20,8 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-// TEMP: Bypass auth while Google OAuth is being fixed.
-// Set to true to skip authentication and use mock users.
-const BYPASS_AUTH = true
+// Bypass auth is disabled - using real Supabase auth
+const BYPASS_AUTH = false
 
 const MOCK_ADMIN_USER: User = {
   id: 'mock-admin-id',
