@@ -1,7 +1,7 @@
 import React from 'react'
 import { Outlet, Link, useLocation } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
-import { LayoutDashboard, Package, Users, Truck, LogOut, Menu } from 'lucide-react'
+import { LayoutDashboard, Package, Users, Truck, LogOut, Menu, FileText, Store } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import NavLink from '@/components/ui/NavLink'
 
@@ -15,6 +15,8 @@ export default function AdminLayout() {
     { to: '/admin/products', label: 'Products', icon: Package },
     { to: '/admin/orders', label: 'Orders', icon: Truck },
     { to: '/admin/users', label: 'Users', icon: Users },
+    { to: '/admin/sellers', label: 'Sellers', icon: Store },
+    { to: '/admin/applications', label: 'Applications', icon: FileText },
     { to: '/admin/delivery-agents', label: 'Delivery Agents', icon: Truck },
   ]
 
