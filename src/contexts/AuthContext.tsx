@@ -127,10 +127,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Step 2: Subscribe to subsequent auth state changes (login, logout,
     // token refresh). This handles events that happen AFTER mount.
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      clearTimeout(safetyTimer)  // ADDED: Clear safety timer as first line
       if (cancelled) return
-      clearTimeout(safetyTimer)
-
+      
       if (session?.user) {
+        // REMOVED: if (event !== 'INITIAL_SESSION') condition
+        // REMOVED: closing brace that went with it
         await fetchUserProfile(session.user.id)
       } else {
         setUser(null)
