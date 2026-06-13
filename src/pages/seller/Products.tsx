@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Badge } from '@/components/ui/badge'
 import { Plus, Edit, Trash2, Package } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
+import { SellerProductsSkeleton } from '@/components/app/AppSkeletons'
 
 export default function SellerProducts() {
   const [products, setProducts] = useState<Product[]>([])
@@ -150,11 +151,7 @@ export default function SellerProducts() {
   }
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    )
+    return <SellerProductsSkeleton />
   }
 
   return (

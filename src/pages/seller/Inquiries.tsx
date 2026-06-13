@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Building2, Package, Clock, Send, Reply } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
+import { SellerInquiriesSkeleton } from '@/components/app/AppSkeletons'
 
 export default function SellerInquiries() {
   const [inquiries, setInquiries] = useState<Inquiry[]>([])
@@ -111,11 +112,7 @@ export default function SellerInquiries() {
   }
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    )
+    return <SellerInquiriesSkeleton />
   }
 
   return (

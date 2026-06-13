@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge'
 import { Building2, MapPin, Shield, Package, CheckCircle, Clock } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
+import { SellerProfileSkeleton } from '@/components/app/AppSkeletons'
 
 export default function SellerProfile() {
   const [products, setProducts] = useState<Product[]>([])
@@ -264,8 +265,26 @@ export default function SellerProfile() {
             </CardHeader>
             <CardContent>
               {loading ? (
-                <div className="flex items-center justify-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                <div className="grid md:grid-cols-2 gap-4">
+                  {[1, 2, 3, 4].map((i) => (
+                    <Card key={i}>
+                      <CardContent className="p-4">
+                        <div className="aspect-square bg-muted rounded-lg mb-3">
+                          <div className="w-full h-full flex items-center justify-center">
+                            <div className="animate-pulse bg-muted-foreground/10 w-full h-full rounded-lg" />
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <div className="h-4 bg-muted rounded animate-pulse w-3/4" />
+                          <div className="flex items-center justify-between">
+                            <div className="h-4 bg-muted rounded animate-pulse w-16" />
+                            <div className="h-4 bg-muted rounded animate-pulse w-16" />
+                          </div>
+                          <div className="h-3 bg-muted rounded animate-pulse w-20" />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
                 </div>
               ) : products.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">

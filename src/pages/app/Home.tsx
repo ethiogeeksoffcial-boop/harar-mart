@@ -20,6 +20,7 @@ import {
   ProductCardSkeleton,
 } from '@/components/marketplace'
 import type { ProductCardData } from '@/components/marketplace'
+import { HomeSkeleton } from '@/components/app/AppSkeletons'
 
 export default function Home() {
   const navigate = useNavigate()
@@ -87,11 +88,7 @@ export default function Home() {
   }
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    )
+    return <HomeSkeleton />
   }
 
   if (error) {

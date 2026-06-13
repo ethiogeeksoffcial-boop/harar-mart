@@ -11,6 +11,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Building2, ArrowLeft, CheckCircle2, Clock, XCircle, RefreshCw } from 'lucide-react'
 import { handleError, handleSuccess } from '@/lib/errors'
+import { SellerApplicationSkeleton } from '@/components/app/AppSkeletons'
 
 type ApplicationStatus = 'pending' | 'approved' | 'rejected' | null
 
@@ -100,11 +101,7 @@ export default function SellerApplication() {
   }
 
   if (loadingApp) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    )
+    return <SellerApplicationSkeleton />
   }
 
   // Show application status if already submitted

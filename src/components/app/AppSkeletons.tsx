@@ -302,6 +302,304 @@ export function CartSkeleton() {
 }
 
 /**
+ * Skeleton for the Home page
+ */
+export function HomeSkeleton() {
+  return (
+    <div className="min-h-screen">
+      <div className="container-alibaba py-6">
+        <div className="flex gap-6">
+          <div className="hidden lg:block w-[260px] shrink-0">
+            <div className="space-y-2">
+              {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+                <Skeleton key={i} className="h-10 w-full rounded-md" />
+              ))}
+            </div>
+          </div>
+          <div className="flex-1 min-w-0">
+            <Skeleton className="h-[400px] w-full rounded-xl" />
+          </div>
+        </div>
+      </div>
+      <div className="container-alibaba pb-6">
+        <Skeleton className="h-20 w-full rounded-xl" />
+      </div>
+      <div className="container-alibaba pb-8">
+        <Skeleton className="h-12 w-full rounded-lg" />
+      </div>
+      <div className="container-alibaba pb-8">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <Skeleton className="h-8 w-56 mb-2" />
+            <Skeleton className="h-4 w-72" />
+          </div>
+          <Skeleton className="h-9 w-24 rounded-md" />
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
+          {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+            <Card key={i}>
+              <CardContent className="p-4">
+                <Skeleton className="aspect-square w-full rounded-lg mb-3" />
+                <Skeleton className="h-4 w-full mb-2" />
+                <Skeleton className="h-4 w-3/4 mb-2" />
+                <Skeleton className="h-4 w-1/2" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+      <section className="bg-muted/30 border-y border-border/50 py-10">
+        <div className="container-alibaba">
+          <Skeleton className="h-8 w-56 mb-6" />
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[1, 2, 3, 4].map((i) => (
+              <Card key={i}>
+                <CardContent className="p-6 text-center">
+                  <Skeleton className="w-16 h-16 mx-auto mb-4 rounded-full" />
+                  <Skeleton className="h-5 w-24 mx-auto mb-2" />
+                  <Skeleton className="h-4 w-32 mx-auto" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+      <section className="py-10">
+        <div className="container-alibaba">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <Skeleton className="h-8 w-48 mb-2" />
+              <Skeleton className="h-4 w-64" />
+            </div>
+            <Skeleton className="h-4 w-16" />
+          </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            {[1, 2, 3].map((i) => (
+              <Card key={i}>
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <Skeleton className="w-12 h-12 rounded-full" />
+                      <div>
+                        <Skeleton className="h-5 w-32 mb-1" />
+                        <Skeleton className="h-4 w-20" />
+                      </div>
+                    </div>
+                    <Skeleton className="h-5 w-5 rounded-full" />
+                  </div>
+                  <Skeleton className="h-4 w-24" />
+                  <div className="mt-3 flex gap-1">
+                    {[1, 2, 3].map((j) => (
+                      <Skeleton key={j} className="h-5 w-16 rounded" />
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+      <section className="bg-primary/5 border-y border-border/50 py-12">
+        <div className="container-alibaba">
+          <Skeleton className="h-8 w-56 mx-auto mb-10" />
+          <div className="grid md:grid-cols-4 gap-8">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="text-center">
+                <Skeleton className="w-14 h-14 mx-auto mb-4 rounded-full" />
+                <Skeleton className="h-5 w-32 mx-auto mb-2" />
+                <Skeleton className="h-4 w-40 mx-auto" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+      <section className="container-alibaba py-12">
+        <Skeleton className="h-48 w-full rounded-2xl" />
+      </section>
+    </div>
+  )
+}
+
+/**
+ * Skeleton for the Seller Application page (loading check)
+ */
+export function SellerApplicationSkeleton() {
+  return (
+    <div className="min-h-[60vh] flex items-center justify-center p-8">
+      <Card className="w-full max-w-lg">
+        <CardHeader className="text-center">
+          <div className="flex justify-center mb-4">
+            <Skeleton className="w-16 h-16 rounded-full" />
+          </div>
+          <Skeleton className="h-8 w-48 mx-auto mb-2" />
+          <Skeleton className="h-4 w-64 mx-auto" />
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <Skeleton className="h-20 w-full rounded-lg" />
+          <Skeleton className="h-4 w-32 mx-auto" />
+          <div className="flex justify-center gap-4">
+            <Skeleton className="h-10 w-32 rounded-md" />
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
+/**
+ * Skeleton for Seller Products page
+ */
+export function SellerProductsSkeleton() {
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <div className="flex items-center justify-between mb-6">
+        <Skeleton className="h-9 w-48" />
+        <Skeleton className="h-10 w-36 rounded-md" />
+      </div>
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {[1, 2, 3, 4, 5, 6].map((i) => (
+          <Card key={i}>
+            <CardHeader>
+              <Skeleton className="aspect-square w-full rounded-lg mb-4" />
+              <Skeleton className="h-5 w-full" />
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex items-center justify-between">
+                <Skeleton className="h-4 w-12" />
+                <Skeleton className="h-4 w-16" />
+              </div>
+              <div className="flex items-center justify-between">
+                <Skeleton className="h-4 w-12" />
+                <Skeleton className="h-4 w-24" />
+              </div>
+              <div className="flex items-center justify-between">
+                <Skeleton className="h-4 w-20" />
+                <Skeleton className="h-4 w-16" />
+              </div>
+              <Skeleton className="h-5 w-20 rounded-full" />
+              <div className="flex gap-2 pt-2">
+                <Skeleton className="h-9 flex-1 rounded-md" />
+                <Skeleton className="h-9 flex-1 rounded-md" />
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/**
+ * Skeleton for Seller Inquiries page
+ */
+export function SellerInquiriesSkeleton() {
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <Skeleton className="h-9 w-48 mb-6" />
+      <div className="space-y-4">
+        <div className="flex gap-2">
+          <Skeleton className="h-10 w-24 rounded-md" />
+          <Skeleton className="h-10 w-28 rounded-md" />
+          <Skeleton className="h-10 w-20 rounded-md" />
+        </div>
+        {[1, 2, 3].map((i) => (
+          <Card key={i}>
+            <CardHeader>
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Skeleton className="h-5 w-48" />
+                    <Skeleton className="h-5 w-20 rounded-full" />
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-4 w-20" />
+                    <Skeleton className="h-4 w-28" />
+                  </div>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-4 w-full mb-1" />
+              <Skeleton className="h-4 w-3/4" />
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/**
+ * Skeleton for Seller Profile page
+ */
+export function SellerProfileSkeleton() {
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <div className="grid lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-1">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-4">
+                <Skeleton className="w-20 h-20 rounded-full" />
+                <div>
+                  <Skeleton className="h-6 w-36 mb-2" />
+                  <div className="flex gap-2">
+                    <Skeleton className="h-5 w-20 rounded-full" />
+                    <Skeleton className="h-5 w-24 rounded-full" />
+                  </div>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-4 w-28" />
+              <Skeleton className="h-4 w-36" />
+              <div>
+                <Skeleton className="h-4 w-24 mb-2" />
+                <div className="flex gap-2">
+                  {[1, 2, 3].map((j) => (
+                    <Skeleton key={j} className="h-6 w-16 rounded-full" />
+                  ))}
+                </div>
+              </div>
+              <Skeleton className="h-10 w-full rounded-md" />
+            </CardContent>
+          </Card>
+        </div>
+        <div className="lg:col-span-2">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <Skeleton className="h-6 w-36" />
+                <Skeleton className="h-5 w-24 rounded-full" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-4">
+                {[1, 2, 3, 4].map((i) => (
+                  <Card key={i}>
+                    <CardContent className="p-4">
+                      <Skeleton className="aspect-square w-full rounded-lg mb-3" />
+                      <Skeleton className="h-4 w-full mb-2" />
+                      <div className="flex items-center justify-between">
+                        <Skeleton className="h-4 w-16" />
+                        <Skeleton className="h-4 w-16" />
+                      </div>
+                      <Skeleton className="h-3 w-20 mt-2" />
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/**
  * Skeleton for the House Rentals page
  */
 export function HouseRentalsSkeleton() {
