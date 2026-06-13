@@ -26,6 +26,11 @@ const Careers = lazy(() => import('./pages/app/Careers'))
 const Press = lazy(() => import('./pages/app/Press'))
 const Partners = lazy(() => import('./pages/app/Partners'))
 const Contact = lazy(() => import('./pages/app/Contact'))
+const Privacy = lazy(() => import('./pages/app/Privacy'))
+const Terms = lazy(() => import('./pages/app/Terms'))
+const Cookies = lazy(() => import('./pages/app/Cookies'))
+const Disclaimer = lazy(() => import('./pages/app/Disclaimer'))
+const Compliance = lazy(() => import('./pages/app/Compliance'))
 const NotFound = lazy(() => import('./pages/app/NotFound'))
 const ComingSoon = lazy(() => import('./pages/ComingSoon'))
 const HouseRentals = lazy(() => import('./pages/app/HouseRentals'))
@@ -141,11 +146,11 @@ function App() {
                 <Route path="guides" element={<ComingSoon />} />
                 <Route path="help" element={<ComingSoon />} />
                 <Route path="community" element={<ComingSoon />} />
-                <Route path="privacy" element={<ComingSoon />} />
-                <Route path="terms" element={<ComingSoon />} />
-                <Route path="cookies" element={<ComingSoon />} />
-                <Route path="disclaimer" element={<ComingSoon />} />
-                <Route path="compliance" element={<ComingSoon />} />
+                <Route path="privacy" element={<Privacy />} />
+                <Route path="terms" element={<Terms />} />
+                <Route path="cookies" element={<Cookies />} />
+                <Route path="disclaimer" element={<Disclaimer />} />
+                <Route path="compliance" element={<Compliance />} />
 
                 {/* Protected Routes */}
                 <Route element={<ProtectedRoute />}>
