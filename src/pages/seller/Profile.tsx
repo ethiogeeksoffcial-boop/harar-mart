@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge'
 import { Building2, MapPin, Shield, Package, CheckCircle, Clock } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { SellerProfileSkeleton } from '@/components/app/AppSkeletons'
+import DiditVerification from '@/components/app/DiditVerification'
 
 export default function SellerProfile() {
   const [products, setProducts] = useState<Product[]>([])
@@ -254,6 +255,16 @@ export default function SellerProfile() {
               </CardContent>
             </Card>
           )}
+
+          {/* Didit KYC Verification */}
+          <DiditVerification
+            userId={user?.id || ''}
+            userEmail={user?.email || ''}
+            userName={user?.full_name || user?.email || ''}
+            sellerProfileId={sellerProfile.id}
+            currentStatus={sellerProfile.didit_verification_status || 'not_started'}
+            currentSessionId={sellerProfile.didit_session_id}
+          />
 
           {/* Product Catalog */}
           <Card>

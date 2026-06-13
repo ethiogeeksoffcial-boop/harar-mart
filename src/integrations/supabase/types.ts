@@ -19,6 +19,8 @@ export interface SellerProfile {
   certifications: string[]
   supplier_type: 'manufacturer' | 'trading_company' | 'wholesaler'
   is_verified: boolean
+  didit_verification_status: 'not_started' | 'pending' | 'approved' | 'declined' | 'expired'
+  didit_session_id: string | null
   created_at: string
   user?: User
 }
