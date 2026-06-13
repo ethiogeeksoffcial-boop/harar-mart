@@ -105,21 +105,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(false)
     }, 8000)
 
-    // Normal auth flow below
-    checkUser().finally(() => {
-      clearTimeout(safetyTimer)
-    })
-
+    // onAuthStateChange is the single source of truth for all auth state.
+    // It fires INITIAL_SESSION on page load with the stored session,
+    // so we don't need a separate checkUser() call — that would create
+    // a race condition where both paths try to set state independently.
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      // Clear the safety timer once we get any event
+      clearTimeout(safetyTimer)
+
       if (session?.user) {
-        // Always fetch the user profile on any auth event, including INITIAL_SESSION.
-        // Previously we skipped INITIAL_SESSION because checkUser() above already
-        // calls getSession(), but this created a race condition where the listener
-        // could fire before checkUser() completes, leaving the user null on refresh.
-        // Now we always fetch — the fetchUserProfile function is idempotent and
-        // handles the case where the profile already exists.
+        // Handle ALL events — INITIAL_SESSION restores session on refresh,
+        // SIGNED_IN handles login, TOKEN_REFRESHED handles token rotation.
         await fetchUserProfile(session.user.id)
-      } else if (event === 'SIGNED_OUT') {
+      } else {
+        // No session — user is signed out or never signed in
         setUser(null)
         setSellerProfile(null)
         setProfileFetchError(null)
@@ -132,23 +131,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       clearTimeout(safetyTimer)
     }
   }, [])
-
-  async function checkUser() {
-    try {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (session?.user) {
-        // Try to fetch profile, but don't block loading forever
-        await Promise.race([
-          fetchUserProfile(session.user.id),
-          new Promise<void>((resolve) => setTimeout(resolve, 5000))
-        ])
-      }
-    } catch (e) {
-      console.error('Error checking user session:', e)
-    } finally {
-      setLoading(false)
-    }
-  }
 
   async function fetchUserProfile(userId: string) {
     try {
