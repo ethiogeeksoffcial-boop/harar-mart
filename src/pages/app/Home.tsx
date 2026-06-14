@@ -8,6 +8,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
+import { Skeleton } from '@/components/ui/skeleton'
 import { supabase } from '@/integrations/supabase/client'
 import type { Category, SellerProfile } from '@/integrations/supabase/types'
 import {
@@ -27,23 +28,21 @@ export default function Home() {
   const [categories, setCategories] = useState<Category[]>([])
   const [verifiedSellers, setVerifiedSellers] = useState<SellerProfile[]>([])
   const [searchQuery, setSearchQuery] = useState('')
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [categoriesLoading, setCategoriesLoading] = useState(true)
+  const [sellersLoading, setSellersLoading] = useState(true)
+  const [productsLoading, setProductsLoading] = useState(true)
 
   // Real product data fetched from the database for the recommendation grid
   const [sampleProducts, setSampleProducts] = useState<ProductCardData[]>([])
 
   useEffect(() => {
-    Promise.all([fetchCategories(), fetchVerifiedSellers(), fetchSampleProducts()])
-      .then(() => setLoading(false))
-      .catch((err) => {
-        console.error('Home: Data fetch error:', err)
-        setError('Failed to load data')
-        setLoading(false)
-      })
+    fetchCategories()
+    fetchVerifiedSellers()
+    fetchSampleProducts()
   }, [])
 
   async function fetchCategories() {
+    setCategoriesLoading(true)
     try {
       const { data, error } = await supabase
         .from('categories')
@@ -54,24 +53,30 @@ export default function Home() {
       if (error) console.error('Error fetching categories:', error)
     } catch (e) {
       console.error('Error fetching categories:', e)
+    } finally {
+      setCategoriesLoading(false)
     }
   }
 
   async function fetchVerifiedSellers() {
+    setSellersLoading(true)
     try {
       const { data, error } = await supabase
         .from('seller_profiles')
-        .select('*, user(*)')
+        .select('*, users:user_id(*)')
         .eq('is_verified', true)
         .limit(6)
       if (data) setVerifiedSellers(data)
       if (error) console.error('Error fetching sellers:', error)
     } catch (e) {
       console.error('Error fetching sellers:', e)
+    } finally {
+      setSellersLoading(false)
     }
   }
 
   async function fetchSampleProducts() {
+    setProductsLoading(true)
     try {
       const { data, error } = await supabase
         .from('products')
@@ -99,6 +104,8 @@ export default function Home() {
       }
     } catch (e) {
       console.error('Error fetching sample products:', e)
+    } finally {
+      setProductsLoading(false)
     }
   }
 
@@ -107,21 +114,6 @@ export default function Home() {
     if (searchQuery) {
       navigate(`/shop?q=${encodeURIComponent(searchQuery)}`)
     }
-  }
-
-  if (loading) {
-    return <HomeSkeleton />
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <p className="text-red-500 mb-4">{error}</p>
-          <p className="text-muted-foreground">Please check your connection and try again.</p>
-        </div>
-      </div>
-    )
   }
 
   return (
@@ -179,9 +171,11 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
-          {sampleProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
+          {productsLoading
+            ? Array.from({ length: 8 }).map((_, i) => <ProductCardSkeleton key={i} />)
+            : sampleProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
         </div>
 
         {/* Load More */}
@@ -200,25 +194,35 @@ export default function Home() {
         <div className="container-alibaba">
           <h2 className="text-2xl font-bold mb-6">Browse by Category</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {categories.map((category) => (
-              <Link
-                key={category.id}
-                to={`/shop?category=${category.id}`}
-                className="group"
-              >
-                <Card className="hover:shadow-lg transition-all duration-200 hover:border-primary/30 hover:-translate-y-0.5 cursor-pointer">
-                  <CardContent className="p-6 text-center">
-                    <div className="w-16 h-16 mx-auto mb-4 bg-muted rounded-full flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-                      <Building2 className="h-8 w-8 text-primary" />
-                    </div>
-                    <h3 className="font-semibold">{category.name}</h3>
-                    <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                      {category.description}
-                    </p>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
+            {categoriesLoading
+              ? Array.from({ length: 8 }).map((_, i) => (
+                  <Card key={i}>
+                    <CardContent className="p-6 text-center">
+                      <Skeleton className="w-16 h-16 mx-auto mb-4 rounded-full" />
+                      <Skeleton className="h-5 w-24 mx-auto mb-2" />
+                      <Skeleton className="h-4 w-32 mx-auto" />
+                    </CardContent>
+                  </Card>
+                ))
+              : categories.map((category) => (
+                  <Link
+                    key={category.id}
+                    to={`/shop?category=${category.id}`}
+                    className="group"
+                  >
+                    <Card className="hover:shadow-lg transition-all duration-200 hover:border-primary/30 hover:-translate-y-0.5 cursor-pointer">
+                      <CardContent className="p-6 text-center">
+                        <div className="w-16 h-16 mx-auto mb-4 bg-muted rounded-full flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                          <Building2 className="h-8 w-8 text-primary" />
+                        </div>
+                        <h3 className="font-semibold">{category.name}</h3>
+                        <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                          {category.description}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))}
           </div>
         </div>
       </section>
@@ -241,41 +245,63 @@ export default function Home() {
             </Link>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
-            {verifiedSellers.map((seller) => (
-              <Card key={seller.id} className="hover:shadow-lg transition-all duration-200 hover:border-primary/30">
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-                        <Building2 className="h-6 w-6 text-primary" />
+            {sellersLoading
+              ? Array.from({ length: 6 }).map((_, i) => (
+                  <Card key={i}>
+                    <CardContent className="p-6">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          <Skeleton className="w-12 h-12 rounded-full" />
+                          <div>
+                            <Skeleton className="h-5 w-32 mb-1" />
+                            <Skeleton className="h-4 w-20" />
+                          </div>
+                        </div>
+                        <Skeleton className="h-5 w-5 rounded-full" />
                       </div>
-                      <div>
-                        <h3 className="font-semibold">{seller.company_name}</h3>
-                        <p className="text-sm text-muted-foreground capitalize">
-                          {seller.supplier_type?.replace('_', ' ') || 'Supplier'}
-                        </p>
+                      <Skeleton className="h-4 w-24 mb-3" />
+                      <div className="flex gap-1">
+                        <Skeleton className="h-5 w-16 rounded" />
+                        <Skeleton className="h-5 w-20 rounded" />
                       </div>
-                    </div>
-                    {seller.is_verified && (
-                      <CheckCircle className="h-5 w-5 text-green-500 shrink-0" />
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Globe className="h-4 w-4" />
-                    <span>{seller.user?.country || 'Global'}</span>
-                  </div>
-                  {seller.certifications && seller.certifications.length > 0 && (
-                    <div className="mt-3 flex flex-wrap gap-1">
-                      {seller.certifications.slice(0, 3).map((cert) => (
-                        <span key={cert} className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">
-                          {cert}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
+                    </CardContent>
+                  </Card>
+                ))
+              : verifiedSellers.map((seller) => (
+                  <Card key={seller.id} className="hover:shadow-lg transition-all duration-200 hover:border-primary/30">
+                    <CardContent className="p-6">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                            <Building2 className="h-6 w-6 text-primary" />
+                          </div>
+                          <div>
+                            <h3 className="font-semibold">{seller.company_name}</h3>
+                            <p className="text-sm text-muted-foreground capitalize">
+                              {seller.supplier_type?.replace('_', ' ') || 'Supplier'}
+                            </p>
+                          </div>
+                        </div>
+                        {seller.is_verified && (
+                          <CheckCircle className="h-5 w-5 text-green-500 shrink-0" />
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Globe className="h-4 w-4" />
+                        <span>{(seller as any).users?.country || 'Global'}</span>
+                      </div>
+                      {seller.certifications && seller.certifications.length > 0 && (
+                        <div className="mt-3 flex flex-wrap gap-1">
+                          {seller.certifications.slice(0, 3).map((cert) => (
+                            <span key={cert} className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">
+                              {cert}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
           </div>
         </div>
       </section>

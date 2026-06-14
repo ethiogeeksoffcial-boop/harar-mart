@@ -9,16 +9,17 @@ import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { Slider } from '@/components/ui/slider'
+import { Skeleton } from '@/components/ui/skeleton'
 import { CheckCircle, Building2, Search, Filter } from 'lucide-react'
 import { getCountryFlag } from '@/lib/utils'
-import { ShopSkeleton } from '@/components/app/AppSkeletons'
 
 export default function Shop() {
   const [products, setProducts] = useState<Product[]>([])
   const [categories, setCategories] = useState<Category[]>([])
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
-  const [loading, setLoading] = useState(true)
+  const [productsLoading, setProductsLoading] = useState(true)
+  const [categoriesLoading, setCategoriesLoading] = useState(true)
   const [showFilters, setShowFilters] = useState(false)
   
   // B2B Filters
@@ -34,25 +35,34 @@ export default function Shop() {
   }, [])
 
   async function fetchProducts() {
-    const { data, error } = await supabase
-      .from('products')
-      .select('*, seller: seller_profiles(*, users(*)), category:categories(*)')
-      .eq('is_available', true)
-    
-    if (data && !error) {
-      setProducts(data)
+    setProductsLoading(true)
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*, seller: seller_profiles(*, users(*)), category:categories(*)')
+        .eq('is_available', true)
+      
+      if (data && !error) {
+        setProducts(data)
+      }
+    } finally {
+      setProductsLoading(false)
     }
-    setLoading(false)
   }
 
   async function fetchCategories() {
-    const { data, error } = await supabase
-      .from('categories')
-      .select('*')
-      .is('parent_id', null)
-    
-    if (data && !error) {
-      setCategories(data)
+    setCategoriesLoading(true)
+    try {
+      const { data, error } = await supabase
+        .from('categories')
+        .select('*')
+        .is('parent_id', null)
+      
+      if (data && !error) {
+        setCategories(data)
+      }
+    } finally {
+      setCategoriesLoading(false)
     }
   }
 
@@ -85,10 +95,6 @@ export default function Shop() {
     setSelectedSupplierTypes(prev =>
       prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]
     )
-  }
-
-  if (loading) {
-    return <ShopSkeleton />
   }
 
   return (
@@ -131,16 +137,20 @@ export default function Shop() {
                 >
                   All Categories
                 </Button>
-                {categories.map((category) => (
-                  <Button
-                    key={category.id}
-                    variant={selectedCategory === category.id ? 'default' : 'ghost'}
-                    className="w-full justify-start"
-                    onClick={() => setSelectedCategory(category.id)}
-                  >
-                    {category.name}
-                  </Button>
-                ))}
+                {categoriesLoading
+                  ? Array.from({ length: 6 }).map((_, i) => (
+                      <Skeleton key={i} className="h-8 w-full rounded" />
+                    ))
+                  : categories.map((category) => (
+                      <Button
+                        key={category.id}
+                        variant={selectedCategory === category.id ? 'default' : 'ghost'}
+                        className="w-full justify-start"
+                        onClick={() => setSelectedCategory(category.id)}
+                      >
+                        {category.name}
+                      </Button>
+                    ))}
               </div>
             </div>
 
@@ -244,7 +254,22 @@ export default function Shop() {
             </p>
           </div>
 
-          {filteredProducts.length === 0 ? (
+          {productsLoading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {Array.from({ length: 12 }).map((_, i) => (
+                <Card key={i}>
+                  <CardContent className="p-4">
+                    <Skeleton className="aspect-square w-full rounded-lg mb-4" />
+                    <Skeleton className="h-5 w-3/4 mb-2" />
+                    <Skeleton className="h-4 w-1/2 mb-2" />
+                    <Skeleton className="h-4 w-1/3 mb-3" />
+                    <Skeleton className="h-4 w-2/3 mb-3" />
+                    <Skeleton className="h-10 w-full rounded" />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : filteredProducts.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-muted-foreground">No products found matching your filters.</p>
             </div>
