@@ -18,7 +18,9 @@ const CartContext = createContext<CartContextType | undefined>(undefined)
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [cartItems, setCartItems] = useState<CartItem[]>([])
-  const [loading, setLoading] = useState(true)
+  // Start false — logged-out users have no cart to wait for.
+  // fetchCart() sets it to false when done for logged-in users.
+  const [loading, setLoading] = useState(false)
   const { user } = useAuth()
 
   useEffect(() => {

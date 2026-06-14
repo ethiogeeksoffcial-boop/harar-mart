@@ -23,7 +23,16 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [sellerProfile, setSellerProfile] = useState<SellerProfile | null>(null)
-  const [loading, setLoading] = useState(true)
+  // Start loading=false for logged-out visitors — check localStorage synchronously
+  // so public pages render immediately instead of blocking on a network round-trip.
+  const [loading, setLoading] = useState<boolean>(() => {
+    try {
+      const key = Object.keys(localStorage).find(k => k.startsWith('sb-') && k.endsWith('-auth-token'))
+      return !!key && !!localStorage.getItem(key)
+    } catch {
+      return false
+    }
+  })
   const [profileFetchError, setProfileFetchError] = useState<string | null>(null)
   const location = useLocation()
 
