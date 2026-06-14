@@ -69,7 +69,10 @@ export default function HouseRentals() {
   const [minPrice, setMinPrice] = useState('')
   const [maxPrice, setMaxPrice] = useState('')
   const [bedrooms, setBedrooms] = useState<string>('any')
+  const [bathrooms, setBathrooms] = useState<string>('any')
+  const [statusFilter, setStatusFilter] = useState<string>('any')
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([])
+  const [locationFilter, setLocationFilter] = useState<string>('any')
 
   // Form state
   const [formData, setFormData] = useState({
@@ -101,6 +104,9 @@ export default function HouseRentals() {
     setLoading(false)
   }
 
+  // Unique locations extracted from data for the location filter dropdown
+  const uniqueLocations = [...new Set(rentals.map((r) => r.location))].sort()
+
   // Filtered rentals
   const filteredRentals = rentals.filter((rental) => {
     // Search query
@@ -128,6 +134,22 @@ export default function HouseRentals() {
         if (rental.bedrooms !== bedCount) return false
       }
     }
+
+    // Bathrooms
+    if (bathrooms !== 'any') {
+      const bathCount = parseInt(bathrooms)
+      if (bathrooms === '3') {
+        if (rental.bathrooms < 3) return false
+      } else {
+        if (rental.bathrooms !== bathCount) return false
+      }
+    }
+
+    // Status
+    if (statusFilter !== 'any' && rental.status !== statusFilter) return false
+
+    // Location
+    if (locationFilter !== 'any' && rental.location !== locationFilter) return false
 
     // Amenities
     if (selectedAmenities.length > 0) {
@@ -546,11 +568,58 @@ export default function HouseRentals() {
                     </Select>
                   </div>
 
+                  {/* Bathrooms */}
+                  <div className="space-y-2">
+                    <Label>Bathrooms</Label>
+                    <Select value={bathrooms} onValueChange={setBathrooms}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="any">Any</SelectItem>
+                        <SelectItem value="1">1 Bathroom</SelectItem>
+                        <SelectItem value="2">2 Bathrooms</SelectItem>
+                        <SelectItem value="3">3+ Bathrooms</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Status */}
+                  <div className="space-y-2">
+                    <Label>Status</Label>
+                    <Select value={statusFilter} onValueChange={setStatusFilter}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="any">Any</SelectItem>
+                        <SelectItem value="available">Available</SelectItem>
+                        <SelectItem value="rented">Rented</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Location */}
+                  <div className="space-y-2">
+                    <Label>Location</Label>
+                    <Select value={locationFilter} onValueChange={setLocationFilter}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Any location" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="any">Any location</SelectItem>
+                        {uniqueLocations.map((loc) => (
+                          <SelectItem key={loc} value={loc}>{loc}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
                   {/* Amenities */}
-                  <div className="space-y-2 md:col-span-2">
+                  <div className="space-y-2 md:col-span-3">
                     <Label>Amenities</Label>
                     <div className="flex flex-wrap gap-2">
-                      {AMENITIES_LIST.slice(0, 8).map((amenity) => (
+                      {AMENITIES_LIST.map((amenity) => (
                         <Badge
                           key={amenity}
                           variant={selectedAmenities.includes(amenity) ? 'default' : 'outline'}
@@ -576,7 +645,7 @@ export default function HouseRentals() {
             <Home className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
             <h3 className="text-xl font-semibold mb-2">No listings found</h3>
             <p className="text-muted-foreground mb-6">
-              {searchQuery || minPrice || maxPrice || bedrooms !== 'any' || selectedAmenities.length > 0
+              {searchQuery || minPrice || maxPrice || bedrooms !== 'any' || bathrooms !== 'any' || statusFilter !== 'any' || locationFilter !== 'any' || selectedAmenities.length > 0
                 ? 'Try adjusting your filters'
                 : 'Be the first to list a property!'}
             </p>
