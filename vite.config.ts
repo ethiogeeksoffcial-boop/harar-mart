@@ -6,7 +6,7 @@ import path from 'path'
 export default defineConfig(({ mode }) => {
   // Load env vars so we can read VITE_BASE_PATH at build time
   const env = loadEnv(mode, process.cwd(), '')
-  const basePath = env.VITE_BASE_PATH || '/harar-mart/'
+  const basePath = env.VITE_BASE_PATH || '/'
 
   return {
     base: basePath,
