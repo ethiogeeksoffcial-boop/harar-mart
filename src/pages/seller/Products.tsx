@@ -35,7 +35,7 @@ export default function SellerProducts() {
     hs_code: '',
     lead_time_days: 7,
     certifications: [] as string[],
-    is_available: true,
+    is_active: true,
   })
 
   useEffect(() => {
@@ -116,7 +116,7 @@ export default function SellerProducts() {
       hs_code: product.hs_code || '',
       lead_time_days: product.lead_time_days ?? 7,
       certifications: product.certifications ?? [],
-      is_available: product.is_available ?? true,
+      is_active: product.is_active ?? true,
     })
     setIsDialogOpen(true)
   }
@@ -134,7 +134,7 @@ export default function SellerProducts() {
       hs_code: '',
       lead_time_days: 7,
       certifications: [],
-      is_available: true,
+      is_active: true,
     })
   }
 
@@ -284,11 +284,11 @@ export default function SellerProducts() {
               <div className="flex items-center space-x-2">
                 <input
                   type="checkbox"
-                  id="isAvailable"
-                  checked={formData.is_available}
-                  onChange={(e) => setFormData({ ...formData, is_available: e.target.checked })}
+                  id="isActive"
+                  checked={formData.is_active}
+                  onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
                 />
-                <Label htmlFor="isAvailable">Product is available</Label>
+                <Label htmlFor="isActive">Product is active/available</Label>
               </div>
 
               <div className="flex gap-2 justify-end">
@@ -344,8 +344,8 @@ export default function SellerProducts() {
                   <span className="text-sm text-muted-foreground">Lead Time:</span>
                   <span className="font-semibold">{product.lead_time_days} days</span>
                 </div>
-                <Badge variant={product.is_available ? 'default' : 'secondary'}>
-                  {product.is_available ? 'Available' : 'Unavailable'}
+                <Badge variant={product.is_active ? 'default' : 'secondary'}>
+                  {product.is_active ? 'Available' : 'Unavailable'}
                 </Badge>
                 <div className="flex gap-2 pt-2">
                   <Button variant="outline" size="sm" className="flex-1" onClick={() => handleEdit(product)}>
