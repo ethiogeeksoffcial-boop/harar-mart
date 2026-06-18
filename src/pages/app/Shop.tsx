@@ -40,7 +40,7 @@ export default function Shop() {
       const { data, error } = await supabase
         .from('products')
         .select('*, seller: seller_profiles(*, users(*)), category:categories(*)')
-        .eq('is_available', true)
+        .eq('is_active', true)
       
       if (data && !error) {
         setProducts(data)

@@ -96,7 +96,7 @@ export default function Home() {
       const { data, error } = await supabase
         .from('products')
         .select('*, seller:seller_profiles(company_name, is_verified)')
-        .eq('is_available', true)
+        .eq('is_active', true)
         .order('created_at', { ascending: false })
         .limit(8)
 
