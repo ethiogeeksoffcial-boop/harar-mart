@@ -12,7 +12,9 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     persistSession: true,
     autoRefreshToken: true,
     detectSessionInUrl: true,
-    storage: window.localStorage,
+    flowType: 'pkce',
+    storageKey: 'harar-mart-auth',
+    storage: typeof window !== 'undefined' ? window.localStorage : undefined,
   },
 })
 

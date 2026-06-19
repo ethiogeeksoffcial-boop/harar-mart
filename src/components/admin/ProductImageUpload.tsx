@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Upload, X } from 'lucide-react'
+import { supabase } from '@/integrations/supabase/client'
 
 interface ProductImageUploadProps {
   currentImage?: string
@@ -17,15 +18,25 @@ export default function ProductImageUpload({ currentImage, onImageChange }: Prod
     if (!file) return
 
     setUploading(true)
-    // In a real app, you would upload to a storage service
-    // For now, we'll use a local preview
-    const reader = new FileReader()
-    reader.onloadend = () => {
-      setPreview(reader.result as string)
-      onImageChange(reader.result as string)
+    try {
+      const ext = file.name.split('.').pop()
+      const path = `${crypto.randomUUID()}.${ext}`
+
+      const { error: uploadError } = await supabase.storage
+        .from('product-images')
+        .upload(path, file, { upsert: false })
+
+      if (uploadError) throw uploadError
+
+      const { data } = supabase.storage.from('product-images').getPublicUrl(path)
+      setPreview(data.publicUrl)
+      onImageChange(data.publicUrl)
+    } catch (err) {
+      console.error('Upload failed:', err)
+      alert('Upload failed: ' + (err instanceof Error ? err.message : 'Unknown error'))
+    } finally {
       setUploading(false)
     }
-    reader.readAsDataURL(file)
   }
 
   const handleRemove = () => {
