@@ -20,6 +20,49 @@ interface Application {
   status: ApplicationStatus
   admin_note: string | null
   created_at: string
+  reviewed_at: string | null
+}
+
+function addBusinessDays(date: Date, days: number): Date {
+  const result = new Date(date)
+  let added = 0
+  while (added < days) {
+    result.setDate(result.getDate() + 1)
+    const dayOfWeek = result.getDay()
+    if (dayOfWeek !== 0 && dayOfWeek !== 6) added++
+  }
+  return result
+}
+
+function canReapply(application: Application): { allowed: boolean; waitUntil: Date | null } {
+  if (application.status === 'approved') return { allowed: false, waitUntil: null }
+
+  if (application.status === 'pending') {
+    const submitted = new Date(application.created_at)
+    const reviewDeadline = addBusinessDays(submitted, 2)
+    const reapplyDate = new Date(reviewDeadline)
+    reapplyDate.setDate(reapplyDate.getDate() + 3)
+
+    if (new Date() >= reapplyDate) {
+      return { allowed: true, waitUntil: null }
+    }
+    return { allowed: false, waitUntil: reapplyDate }
+  }
+
+  if (application.status === 'rejected') {
+    const reviewedDate = application.reviewed_at
+      ? new Date(application.reviewed_at)
+      : new Date(application.created_at)
+    const reapplyDate = new Date(reviewedDate)
+    reapplyDate.setDate(reapplyDate.getDate() + 3)
+
+    if (new Date() >= reapplyDate) {
+      return { allowed: true, waitUntil: null }
+    }
+    return { allowed: false, waitUntil: reapplyDate }
+  }
+
+  return { allowed: true, waitUntil: null }
 }
 
 export default function SellerApplication() {
@@ -106,6 +149,8 @@ export default function SellerApplication() {
 
   // Show application status if already submitted
   if (application) {
+    const reapplyInfo = canReapply(application)
+
     return (
       <div className="min-h-[60vh] flex items-center justify-center p-8">
         <Card className="w-full max-w-lg">
@@ -135,7 +180,7 @@ export default function SellerApplication() {
             <CardDescription>
               {application.status === 'pending' && 'We\'ll review your application within 2 business days. You\'ll be notified once a decision is made.'}
               {application.status === 'approved' && 'Congratulations! You can now access the seller dashboard and start listing products.'}
-              {application.status === 'rejected' && 'Your application was not approved at this time. You can submit a new application with updated information.'}
+              {application.status === 'rejected' && 'Your application was not approved at this time.'}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -148,6 +193,18 @@ export default function SellerApplication() {
             <p className="text-xs text-muted-foreground text-center">
               Submitted on {new Date(application.created_at).toLocaleDateString()}
             </p>
+
+            {!reapplyInfo.allowed && reapplyInfo.waitUntil && (
+              <div className="bg-muted/50 border rounded-lg p-3 text-center">
+                <p className="text-sm text-muted-foreground">
+                  You can reapply after{' '}
+                  <span className="font-semibold text-foreground">
+                    {reapplyInfo.waitUntil.toLocaleDateString()}
+                  </span>
+                </p>
+              </div>
+            )}
+
             <div className="flex justify-center gap-4">
               <Button variant="outline" onClick={() => navigate('/')}>
                 Back to Home
@@ -157,7 +214,7 @@ export default function SellerApplication() {
                   Go to Seller Dashboard
                 </Button>
               )}
-              {application.status === 'rejected' && (
+              {reapplyInfo.allowed && application.status !== 'approved' && (
                 <Button onClick={() => setApplication(null)}>
                   <RefreshCw className="h-4 w-4 mr-2" />
                   Reapply

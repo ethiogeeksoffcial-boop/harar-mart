@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'
-import { Plus, Edit, Trash2, Package } from 'lucide-react'
+import { Plus, Edit, Trash2, Package, Upload, X } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { SellerProductsSkeleton } from '@/components/app/AppSkeletons'
 
@@ -24,6 +24,8 @@ export default function SellerProducts() {
   const navigate = useNavigate()
 
   // Form state
+  const [imageUploading, setImageUploading] = useState(false)
+
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -68,11 +70,16 @@ export default function SellerProducts() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     
+    const productPayload = {
+      ...formData,
+      is_available: formData.is_active,
+    }
+
     if (editingProduct) {
       const { error } = await supabase
         .from('products')
         .update({
-          ...formData,
+          ...productPayload,
           updated_at: new Date().toISOString(),
         })
         .eq('id', editingProduct.id)
@@ -83,7 +90,7 @@ export default function SellerProducts() {
       }
     } else {
       const { error } = await supabase.from('products').insert({
-        ...formData,
+        ...productPayload,
         seller_id: sellerProfile?.id,
       })
       if (error) alert('Failed to create product')
@@ -271,14 +278,60 @@ export default function SellerProducts() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="images">Image URLs (one per line, optional)</Label>
-                <Textarea
-                  id="images"
-                  value={formData.images.join('\n')}
-                  onChange={(e) => setFormData({ ...formData, images: e.target.value.split('\n').filter(Boolean) })}
-                  rows={3}
-                  placeholder="https://example.com/image1.jpg&#10;https://example.com/image2.jpg"
-                />
+                <Label>Product Images</Label>
+                {formData.images.length > 0 && (
+                  <div className="grid grid-cols-3 gap-2">
+                    {formData.images.map((url, idx) => (
+                      <div key={idx} className="relative group">
+                        <img src={url} alt={`Product ${idx + 1}`} className="w-full h-24 object-cover rounded border" />
+                        <button
+                          type="button"
+                          onClick={() => setFormData(prev => ({ ...prev, images: prev.images.filter((_, i) => i !== idx) }))}
+                          className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <div>
+                  <input
+                    type="file"
+                    id="product-image-upload"
+                    accept="image/*"
+                    className="hidden"
+                    disabled={imageUploading}
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0]
+                      if (!file) return
+                      setImageUploading(true)
+                      try {
+                        const ext = file.name.split('.').pop()
+                        const path = `${crypto.randomUUID()}.${ext}`
+                        const { error: uploadError } = await supabase.storage
+                          .from('product-images')
+                          .upload(path, file, { upsert: false })
+                        if (uploadError) throw uploadError
+                        const { data } = supabase.storage.from('product-images').getPublicUrl(path)
+                        setFormData(prev => ({ ...prev, images: [...prev.images, data.publicUrl] }))
+                      } catch (err) {
+                        alert('Upload failed: ' + (err instanceof Error ? err.message : 'Unknown error'))
+                      } finally {
+                        setImageUploading(false)
+                        e.target.value = ''
+                      }
+                    }}
+                  />
+                  <label htmlFor="product-image-upload">
+                    <Button type="button" variant="outline" size="sm" disabled={imageUploading} asChild>
+                      <span>
+                        <Upload className="h-4 w-4 mr-2" />
+                        {imageUploading ? 'Uploading...' : 'Upload Image'}
+                      </span>
+                    </Button>
+                  </label>
+                </div>
               </div>
 
               <div className="flex items-center space-x-2">

@@ -41,18 +41,6 @@ export default function Home() {
     fetchCategories()
     fetchVerifiedSellers()
     fetchSampleProducts()
-
-    // Safety timeout: if any query takes > 8 seconds, show error state
-    const timeout = setTimeout(() => {
-      if (categoriesLoading || sellersLoading || productsLoading) {
-        setFetchError('Loading is taking longer than expected. Please check your connection and try again.')
-        setCategoriesLoading(false)
-        setSellersLoading(false)
-        setProductsLoading(false)
-      }
-    }, 8000)
-
-    return () => clearTimeout(timeout)
   }, [])
 
   async function fetchCategories() {
@@ -75,7 +63,6 @@ export default function Home() {
   async function fetchVerifiedSellers() {
     setSellersLoading(true)
     try {
-      // Fetch seller_profiles without joining to users table to avoid RLS recursion
       const { data, error } = await supabase
         .from('seller_profiles')
         .select('*')
@@ -102,6 +89,7 @@ export default function Home() {
 
       if (error) {
         console.error('Error fetching sample products:', error)
+        setProductsLoading(false)
         return
       }
 
