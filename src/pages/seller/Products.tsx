@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge'
 import { Plus, Edit, Trash2, Package, Upload, X } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { SellerProductsSkeleton } from '@/components/app/AppSkeletons'
+import { uploadImages } from '@/services/upload'
 
 export default function SellerProducts() {
   const [products, setProducts] = useState<ProductWithRelations[]>([])
@@ -300,21 +301,16 @@ export default function SellerProducts() {
                     type="file"
                     id="product-image-upload"
                     accept="image/*"
+                    multiple
                     className="hidden"
                     disabled={imageUploading}
                     onChange={async (e) => {
-                      const file = e.target.files?.[0]
-                      if (!file) return
+                      const files = e.target.files
+                      if (!files || files.length === 0) return
                       setImageUploading(true)
                       try {
-                        const ext = file.name.split('.').pop()
-                        const path = `${crypto.randomUUID()}.${ext}`
-                        const { error: uploadError } = await supabase.storage
-                          .from('product-images')
-                          .upload(path, file, { upsert: false })
-                        if (uploadError) throw uploadError
-                        const { data } = supabase.storage.from('product-images').getPublicUrl(path)
-                        setFormData(prev => ({ ...prev, images: [...prev.images, data.publicUrl] }))
+                        const urls = await uploadImages(Array.from(files), 'product-images')
+                        setFormData(prev => ({ ...prev, images: [...prev.images, ...urls] }))
                       } catch (err) {
                         alert('Upload failed: ' + (err instanceof Error ? err.message : 'Unknown error'))
                       } finally {
@@ -327,10 +323,11 @@ export default function SellerProducts() {
                     <Button type="button" variant="outline" size="sm" disabled={imageUploading} asChild>
                       <span>
                         <Upload className="h-4 w-4 mr-2" />
-                        {imageUploading ? 'Uploading...' : 'Upload Image'}
+                        {imageUploading ? 'Uploading...' : 'Upload Images'}
                       </span>
                     </Button>
                   </label>
+                  <p className="text-xs text-muted-foreground mt-1">You can select multiple images at once</p>
                 </div>
               </div>
 

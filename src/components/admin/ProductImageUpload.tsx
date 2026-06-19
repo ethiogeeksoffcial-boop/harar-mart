@@ -2,74 +2,68 @@ import React, { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Upload, X } from 'lucide-react'
-import { supabase } from '@/integrations/supabase/client'
+import { uploadImages } from '@/services/upload'
 
 interface ProductImageUploadProps {
-  currentImage?: string
-  onImageChange: (url: string) => void
+  images: string[]
+  onImagesChange: (urls: string[]) => void
 }
 
-export default function ProductImageUpload({ currentImage, onImageChange }: ProductImageUploadProps) {
-  const [preview, setPreview] = useState(currentImage || '')
+export default function ProductImageUpload({ images, onImagesChange }: ProductImageUploadProps) {
   const [uploading, setUploading] = useState(false)
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
+    const files = e.target.files
+    if (!files || files.length === 0) return
 
     setUploading(true)
     try {
-      const ext = file.name.split('.').pop()
-      const path = `${crypto.randomUUID()}.${ext}`
-
-      const { error: uploadError } = await supabase.storage
-        .from('product-images')
-        .upload(path, file, { upsert: false })
-
-      if (uploadError) throw uploadError
-
-      const { data } = supabase.storage.from('product-images').getPublicUrl(path)
-      setPreview(data.publicUrl)
-      onImageChange(data.publicUrl)
+      const urls = await uploadImages(Array.from(files), 'product-images')
+      onImagesChange([...images, ...urls])
     } catch (err) {
       console.error('Upload failed:', err)
       alert('Upload failed: ' + (err instanceof Error ? err.message : 'Unknown error'))
     } finally {
       setUploading(false)
+      e.target.value = ''
     }
   }
 
-  const handleRemove = () => {
-    setPreview('')
-    onImageChange('')
+  const handleRemove = (idx: number) => {
+    onImagesChange(images.filter((_, i) => i !== idx))
   }
 
   return (
     <Card>
       <CardContent className="pt-6">
         <div className="space-y-4">
-          {preview ? (
-            <div className="relative">
-              <img
-                src={preview}
-                alt="Product preview"
-                className="w-full h-48 object-cover rounded"
-              />
-              <Button
-                variant="destructive"
-                size="icon"
-                className="absolute top-2 right-2"
-                onClick={handleRemove}
-              >
-                <X className="h-4 w-4" />
-              </Button>
+          {images.length > 0 && (
+            <div className="grid grid-cols-3 gap-2">
+              {images.map((url, idx) => (
+                <div key={idx} className="relative group">
+                  <img
+                    src={url}
+                    alt={`Product ${idx + 1}`}
+                    className="w-full h-24 object-cover rounded border"
+                  />
+                  <Button
+                    variant="destructive"
+                    size="icon"
+                    className="absolute top-1 right-1 h-5 w-5 opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={() => handleRemove(idx)}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+              ))}
             </div>
-          ) : (
+          )}
+          {images.length === 0 && (
             <div className="border-2 border-dashed rounded-lg h-48 flex items-center justify-center bg-muted">
               <div className="text-center">
                 <Upload className="h-12 w-12 mx-auto mb-2 text-muted-foreground" />
                 <p className="text-sm text-muted-foreground">
-                  No image selected
+                  No images selected
                 </p>
               </div>
             </div>
@@ -77,17 +71,19 @@ export default function ProductImageUpload({ currentImage, onImageChange }: Prod
           <div>
             <input
               type="file"
-              id="image-upload"
+              id="admin-image-upload"
               accept="image/*"
+              multiple
               onChange={handleFileChange}
               className="hidden"
               disabled={uploading}
             />
-            <label htmlFor="image-upload">
+            <label htmlFor="admin-image-upload">
               <Button variant="outline" className="w-full" asChild>
-                <span>{uploading ? 'Uploading...' : 'Choose Image'}</span>
+                <span>{uploading ? 'Uploading...' : 'Upload Images'}</span>
               </Button>
             </label>
+            <p className="text-xs text-muted-foreground mt-1">Select multiple images at once</p>
           </div>
         </div>
       </CardContent>
