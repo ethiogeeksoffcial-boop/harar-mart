@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { CheckCircle, Building2, Package, Clock, Shield, Send } from 'lucide-react'
+import { CheckCircle, Building2, Package, Clock, Shield, Send, ChevronLeft, ChevronRight, X, ZoomIn } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useToast } from '@/hooks/use-toast'
 import { ProductDetailSkeleton } from '@/components/app/AppSkeletons'
@@ -22,6 +22,8 @@ export default function ProductDetail() {
   const [destinationPort, setDestinationPort] = useState('')
   const [desiredDate, setDesiredDate] = useState('')
   const [sending, setSending] = useState(false)
+  const [selectedImageIdx, setSelectedImageIdx] = useState(0)
+  const [lightboxOpen, setLightboxOpen] = useState(false)
   const { user, isBuyer } = useAuth()
   const { toast } = useToast()
 
@@ -102,16 +104,69 @@ export default function ProductDetail() {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      {/* Lightbox */}
+      {lightboxOpen && product.images && product.images.length > 0 && (
+        <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center" onClick={() => setLightboxOpen(false)}>
+          <button
+            className="absolute top-4 right-4 text-white hover:text-gray-300 z-10"
+            onClick={() => setLightboxOpen(false)}
+          >
+            <X className="h-8 w-8" />
+          </button>
+          {product.images.length > 1 && (
+            <>
+              <button
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 bg-black/40 rounded-full p-2 z-10"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setSelectedImageIdx((prev) => (prev - 1 + product.images!.length) % product.images!.length)
+                }}
+              >
+                <ChevronLeft className="h-8 w-8" />
+              </button>
+              <button
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 bg-black/40 rounded-full p-2 z-10"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setSelectedImageIdx((prev) => (prev + 1) % product.images!.length)
+                }}
+              >
+                <ChevronRight className="h-8 w-8" />
+              </button>
+            </>
+          )}
+          <img
+            src={product.images[selectedImageIdx]}
+            alt={`${product.name} ${selectedImageIdx + 1}`}
+            className="max-h-[85vh] max-w-[90vw] object-contain"
+            onClick={(e) => e.stopPropagation()}
+          />
+          {product.images.length > 1 && (
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white text-sm bg-black/50 px-3 py-1 rounded-full">
+              {selectedImageIdx + 1} / {product.images.length}
+            </div>
+          )}
+        </div>
+      )}
+
       <div className="grid md:grid-cols-2 gap-8 mb-8">
-        {/* Product Images */}
+        {/* Product Images Gallery */}
         <div>
-          <div className="aspect-square bg-muted rounded-lg overflow-hidden mb-4">
-            {product.images?.[0] ? (
-              <img
-                src={product.images[0]}
-                alt={product.name}
-                className="w-full h-full object-cover"
-              />
+          <div
+            className="aspect-square bg-muted rounded-lg overflow-hidden mb-4 cursor-pointer relative group"
+            onClick={() => { if (product.images?.length) setLightboxOpen(true) }}
+          >
+            {product.images?.[selectedImageIdx] ? (
+              <>
+                <img
+                  src={product.images[selectedImageIdx]}
+                  alt={product.name}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                  <ZoomIn className="h-10 w-10 text-white opacity-0 group-hover:opacity-70 transition-opacity drop-shadow-lg" />
+                </div>
+              </>
             ) : (
               <div className="w-full h-full flex items-center justify-center text-muted-foreground">
                 <Package className="h-24 w-24" />
@@ -119,11 +174,18 @@ export default function ProductDetail() {
             )}
           </div>
           {product.images && product.images.length > 1 && (
-            <div className="grid grid-cols-4 gap-2">
-              {product.images.slice(1).map((img, idx) => (
-                <div key={idx} className="aspect-square bg-muted rounded-lg overflow-hidden">
-                  <img src={img} alt={`${product.name} ${idx + 2}`} className="w-full h-full object-cover" />
-                </div>
+            <div className="grid grid-cols-5 gap-2">
+              {product.images.map((img, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => setSelectedImageIdx(idx)}
+                  className={`aspect-square bg-muted rounded-lg overflow-hidden border-2 transition-colors ${
+                    idx === selectedImageIdx ? 'border-primary' : 'border-transparent hover:border-muted-foreground/30'
+                  }`}
+                >
+                  <img src={img} alt={`${product.name} ${idx + 1}`} className="w-full h-full object-cover" />
+                </button>
               ))}
             </div>
           )}

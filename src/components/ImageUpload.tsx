@@ -1,9 +1,9 @@
 import { useState, useCallback } from 'react'
-import { supabase } from '@/integrations/supabase/client'
+import { uploadImage } from '@/services/upload'
 import { handleError } from '@/lib/errors'
 
 interface Props {
-  bucket: string
+  bucket: 'product-images' | 'house-images'
   onUpload: (url: string) => void
 }
 
@@ -16,17 +16,8 @@ export function ImageUpload({ bucket, onUpload }: Props) {
 
     setUploading(true)
     try {
-      const ext  = file.name.split('.').pop()
-      const path = `${crypto.randomUUID()}.${ext}`
-
-      const { error: uploadError } = await supabase.storage
-        .from(bucket)
-        .upload(path, file, { upsert: false })
-
-      if (uploadError) throw uploadError
-
-      const { data } = supabase.storage.from(bucket).getPublicUrl(path)
-      onUpload(data.publicUrl)
+      const url = await uploadImage(file, bucket)
+      onUpload(url)
     } catch (err) {
       handleError(err, 'Upload failed')
     } finally {
